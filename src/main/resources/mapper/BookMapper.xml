@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kaishengit.mapper.BookMapper">
+    <resultMap id="findByNameMap" type="com.kaishengit.entity.Book">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="author" property="author"/>
+        <result column="total" property="total"/>
+        <result column="nownum" property="nowNum"/>
+        <result column="isbn" property="isbn"/>
+    </resultMap>
+    <select id="finBookByName" resultMap="findByNameMap">
+        select b.id,b.name,author,total,nownum,isbn
+        from t_book b
+        <if test="name != null and name != ''">
+            where name like #{name}
+        </if>
+    </select>
+
+    <select id="findBookByNameAndName" resultMap="findByNameMap">
+        select * from t_book
+        <where>
+            <if test="first != null and first != ''">
+                name like #{first}
+            </if>
+            <if test="second != null and second != ''">
+                and name like #{second}
+            </if>
+        </where>
+    </select>
+
+    <select id="findBookByManyId" resultMap="findByNameMap">
+        select * from t_book
+        where id in
+        <foreach collection="list" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </select>
+</mapper>

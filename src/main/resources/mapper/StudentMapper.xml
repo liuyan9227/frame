@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.kaishengit.mapper.StudentMapper">
+
+    <!--  -->
+    <!-- 将所有student对象与数据库做映射 -->
+    <!-- 注意嵌套的层次 -->
+    <resultMap id="baseMap" type="com.kaishengit.entity.Student">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="age" property="age"/>
+        <result column="address" property="address"/>
+        <result column="school_id" property="schoolId"/>
+    </resultMap>
+    <!-- 将Student中的School属性与数据库进行映射 -->
+    <!-- column:数据库的名字 | property:entity的名字 -->
+    <!-- association && javaType -->
+    <resultMap id="studentMap" type="com.kaishengit.entity.Student" extends="baseMap">
+       <association property="school" javaType="com.kaishengit.entity.School">
+           <id column="school_id" property="id"/>
+           <result column="school_name" property="schoolName"/>
+       </association>
+    </resultMap>
+    <select id="findSchoolByStudentId" resultMap="studentMap">
+        select stu.id,stu.name,address,age,school_id,school_name
+        from t_student stu
+        left join t_school s
+        on stu.school_id = s.id
+        where stu.id = #{id}
+    </select>
+
+
+    <resultMap id="studentTagMap" type="com.kaishengit.entity.Student" extends="baseMap">
+        <collection property="tagList" ofType="com.kaishengit.entity.Tag">
+            <id column="tag_id" property="id"/>
+            <result column="tag_name" property="tagName"/>
+        </collection>
+    </resultMap>
+    <select id="findTagByStudent" resultMap="studentTagMap">
+        select stu.id, stu.name, address, age, tag_id, tag_name
+        from t_student stu
+        left join t_student_tag st on stu.id = st.student_id
+        left join t_tag t on st.tag_id = t.id
+        where stu.id = #{id}
+    </select>
+
+
+</mapper>
